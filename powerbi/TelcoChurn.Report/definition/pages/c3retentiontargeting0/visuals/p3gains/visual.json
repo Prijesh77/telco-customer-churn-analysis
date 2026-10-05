@@ -79,6 +79,20 @@
                   "Value": "true"
                 }
               }
+            },
+            "labelDensity": {
+              "expr": {
+                "Literal": {
+                  "Value": "40L"
+                }
+              }
+            },
+            "labelPosition": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Under'"
+                }
+              }
             }
           }
         }

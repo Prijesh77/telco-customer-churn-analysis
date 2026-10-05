@@ -53,21 +53,6 @@
                       "Entity": "Customers"
                     }
                   },
-                  "Property": "Contract"
-                }
-              },
-              "queryRef": "Customers.Contract",
-              "nativeQueryRef": "Contract",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Customers"
-                    }
-                  },
                   "Property": "Tenure (Months)"
                 }
               },

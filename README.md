@@ -62,6 +62,14 @@ An interactive report for the retention team, saved as a [Power BI Project](http
 - **Data model:** `Customers` (one row per customer) → `Add-on Services` (one row per customer per service), plus a dedicated `Churn Measures` table with 19 documented DAX measures in display folders.
 - **DAX highlights:** churn and revenue-lost rates, expected revenue at risk (`SUMX` of charge × churn probability), and a cumulative gains curve measure.
 
+**Churn Drivers**
+
+![Power BI churn drivers page](powerbi/screenshots/02_churn_drivers.png)
+
+**Retention Targeting**
+
+![Power BI retention targeting page](powerbi/screenshots/03_retention_targeting.png)
+
 **To open it:** install [Power BI Desktop](https://www.microsoft.com/power-bi/desktop), open `powerbi/TelcoChurn.pbip`, then click **Refresh**. The data loads from this repo on GitHub; choose *Anonymous* if asked for credentials.
 
 ## Charts
