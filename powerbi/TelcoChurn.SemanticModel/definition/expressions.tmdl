@@ -1,0 +1,7 @@
+/// Folder the report loads its CSV from. Points at this repository on GitHub so the report
+/// refreshes for anyone who clones it; change it to a local folder to work offline.
+expression DataSourceUrl = "https://raw.githubusercontent.com/Prijesh77/telco-customer-churn-analysis/main/powerbi/data/" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 37287611-44cd-5326-8b81-b03a05baa2e7
+
+	annotation PBI_ResultType = Text
+

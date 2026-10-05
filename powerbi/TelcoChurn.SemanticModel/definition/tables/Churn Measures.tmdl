@@ -1,0 +1,163 @@
+/// All report measures
+table 'Churn Measures'
+	lineageTag: 803ce5e8-18b1-58de-b156-13f7ac79bcf0
+
+	/// Number of customers
+	measure 'Total Customers' = COUNTROWS ( Customers )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 5b288c9e-9000-5aa5-aab2-4c21d49cdece
+
+	/// Customers who left
+	measure 'Churned Customers' = CALCULATE ( [Total Customers], Customers[Churn] = "Yes" )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 6412534d-4628-509a-a9f4-96d616b1c40d
+
+	/// Customers who stayed
+	measure 'Retained Customers' = CALCULATE ( [Total Customers], Customers[Churn] = "No" )
+		formatString: #,0
+		displayFolder: Customers
+		lineageTag: 0fdf3b6d-c306-50c3-87ff-92168978bac5
+
+	/// Share of customers who left
+	measure 'Churn Rate' = DIVIDE ( [Churned Customers], [Total Customers] )
+		formatString: 0.0%
+		displayFolder: Churn
+		lineageTag: c8d78bd5-2569-54a9-b6d2-eadb4d78100e
+
+	/// Churn rate for everything selected by the slicers, ignoring the visual's own grouping
+	measure 'Baseline Churn Rate' = CALCULATE ( [Churn Rate], ALLSELECTED ( Customers ) )
+		formatString: 0.0%
+		displayFolder: Churn
+		lineageTag: ab880911-eb22-53fd-a906-be2d6f2a3d35
+
+	/// Percentage-point gap between this group and the baseline
+	measure 'Churn Rate vs Baseline' = [Churn Rate] - [Baseline Churn Rate]
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Churn
+		lineageTag: de6e20da-71fa-5e67-8945-612201c5a94a
+
+	/// Average months as a customer
+	measure 'Avg Tenure (Months)' = AVERAGE ( Customers[Tenure (Months)] )
+		formatString: 0.0
+		displayFolder: Customers
+		lineageTag: 45d46ea5-6838-5b54-9a74-af5886d7d3e7
+
+	/// Total monthly charges
+	measure 'Monthly Revenue' = SUM ( Customers[Monthly Charges] )
+		formatString: \$#,0
+		displayFolder: Revenue
+		lineageTag: 78cf0fc1-7dd3-52fa-bd64-66ce2a8cb852
+
+	/// Monthly charges of customers who left
+	measure 'Monthly Revenue Lost' = CALCULATE ( [Monthly Revenue], Customers[Churn] = "Yes" )
+		formatString: \$#,0
+		displayFolder: Revenue
+		lineageTag: ee94bd30-dce4-5a79-96e9-60a941b8e0bd
+
+	/// Share of monthly revenue lost to churn
+	measure 'Revenue Lost %' = DIVIDE ( [Monthly Revenue Lost], [Monthly Revenue] )
+		formatString: 0.0%
+		displayFolder: Revenue
+		lineageTag: 04f75676-944b-5acc-8a55-2afaeef35380
+
+	/// Monthly revenue lost, annualised
+	measure 'Annual Revenue Lost' = [Monthly Revenue Lost] * 12
+		formatString: \$#,0
+		displayFolder: Revenue
+		lineageTag: 69fd4573-8e8e-5b43-9521-30a265d8dbd2
+
+	/// Average monthly charge per customer
+	measure 'Avg Monthly Charge' = AVERAGE ( Customers[Monthly Charges] )
+		formatString: \$#,0.00
+		displayFolder: Revenue
+		lineageTag: 0a78bb3c-5d27-5440-ae02-bff02e11bd1b
+
+	/// Churn rate among internet customers, split by whether they have each add-on
+	measure 'Add-on Churn Rate' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( 'Add-on Services' ), Customers[Churn] = "Yes" ),
+			    COUNTROWS ( 'Add-on Services' )
+			)
+		formatString: 0.0%
+		displayFolder: Churn
+		lineageTag: 9252de33-1c78-55a2-9cf4-9c2c70dd7491
+
+	/// Customers who are still with the company and can be contacted
+	measure 'Active Customers' = CALCULATE ( [Total Customers], Customers[Churn] = "No" )
+		formatString: #,0
+		displayFolder: Retention Targeting
+		lineageTag: e7809ac0-1be6-5f37-9675-e94c815c6dcf
+
+	/// Active customers in the riskiest 20%: the retention call list
+	measure 'Active High-Risk Customers' = CALCULATE ( [Active Customers], Customers[Risk Tier] = "High" )
+		formatString: #,0
+		displayFolder: Retention Targeting
+		lineageTag: 6cdca9f0-3114-5c7f-a1d2-88f529fc44e8
+
+	/// Monthly charges of active customers weighted by their churn probability
+	measure 'Expected Revenue at Risk' =
+			SUMX (
+			    FILTER ( Customers, Customers[Churn] = "No" ),
+			    Customers[Monthly Charges] * Customers[Risk Score]
+			)
+		formatString: \$#,0
+		displayFolder: Retention Targeting
+		lineageTag: 9fda650a-0c71-5772-b9f0-1eabf7f48989
+
+	/// Average churn probability from the model
+	measure 'Avg Risk Score' = AVERAGE ( Customers[Risk Score] )
+		formatString: 0.0%
+		displayFolder: Retention Targeting
+		lineageTag: d9689f6e-9a47-5a33-9eca-dc090881150e
+
+	/// Share of churners the retention team reaches by contacting the riskiest 20% of customers
+	measure 'Churners Caught in Top 20%' =
+			DIVIDE (
+			    CALCULATE ( [Churned Customers], Customers[Risk Decile] <= 2 ),
+			    [Churned Customers]
+			)
+		formatString: 0.0%
+		displayFolder: Retention Targeting
+		lineageTag: 2eda8afc-ae53-5cda-b99f-ca8172286c95
+
+	/// Gains curve: share of all churners caught when contacting customers riskiest-first up to this decile
+	measure 'Cumulative Churners Caught' =
+			VAR CurrentDecile = MAX ( Customers[Risk Decile] )
+			VAR CaughtSoFar =
+			    CALCULATE (
+			        [Churned Customers],
+			        REMOVEFILTERS ( Customers[Risk Decile Label] ),
+			        Customers[Risk Decile] <= CurrentDecile
+			    )
+			VAR AllChurners =
+			    CALCULATE (
+			        [Churned Customers],
+			        REMOVEFILTERS ( Customers[Risk Decile], Customers[Risk Decile Label] )
+			    )
+			RETURN
+			    DIVIDE ( CaughtSoFar, AllChurners )
+		formatString: 0.0%
+		displayFolder: Retention Targeting
+		lineageTag: 5a864120-fa3c-5017-b36b-56b868897d85
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: 5d401f6a-2c40-5895-a266-c73dff87911d
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Churn Measures' = m
+		mode: import
+		source =
+				let
+				    Source = #table(type table [Placeholder = text], {})
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

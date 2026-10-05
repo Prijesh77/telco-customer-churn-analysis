@@ -1,0 +1,52 @@
+/// Internet customers unpivoted to one row per add-on service
+table 'Add-on Services'
+	lineageTag: 8b0375f3-6723-5002-b66f-bce1023cbfdb
+
+	column 'Customer ID'
+		dataType: string
+		isHidden
+		lineageTag: 405fa941-7bfc-50e4-a9ae-003d52967df6
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Service
+		dataType: string
+		lineageTag: 90e68e13-0a83-545e-8abe-98489990f7ca
+		summarizeBy: none
+		sourceColumn: Service
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Has Service'
+		dataType: string
+		lineageTag: ba42617e-f457-5cbc-afd1-80192ab52694
+		summarizeBy: none
+		sourceColumn: Has Service
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Add-on Services' = m
+		mode: import
+		source =
+				let
+				    Source = Customers,
+				    // Add-on services only apply to internet customers
+				    InternetCustomers = Table.SelectRows(Source, each [Internet Service] <> "No"),
+				    KeptColumns = Table.SelectColumns(
+				        InternetCustomers,
+				        {"Customer ID", "Online Security", "Online Backup", "Device Protection",
+				         "Tech Support", "Streaming TV", "Streaming Movies"}
+				    ),
+				    Unpivoted = Table.UnpivotOtherColumns(KeptColumns, {"Customer ID"}, "Service", "Has Service"),
+				    Labelled = Table.TransformColumns(
+				        Unpivoted,
+				        {{"Service", each Text.From(_), type text},
+				         {"Has Service", each if _ = "Yes" then "With add-on" else "Without add-on", type text}}
+				    )
+				in
+				    Labelled
+
+	annotation PBI_ResultType = Table
+

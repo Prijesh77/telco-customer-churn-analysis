@@ -1,0 +1,125 @@
+{
+  "name": "Telco Churn",
+  "dataColors": [
+    "#2350B5",
+    "#B67A08",
+    "#A9BDE8",
+    "#5F6C80",
+    "#6B8E23",
+    "#8C5AA8",
+    "#C0504D",
+    "#3A9AA6"
+  ],
+  "foreground": "#111C2D",
+  "foregroundNeutralSecondary": "#5F6C80",
+  "foregroundNeutralTertiary": "#8A96A8",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F4F6FA",
+  "backgroundNeutral": "#C9D2DE",
+  "tableAccent": "#2350B5",
+  "good": "#2E7D32",
+  "neutral": "#B67A08",
+  "bad": "#B3261E",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#111C2D"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#111C2D"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#5F6C80"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 26,
+      "color": "#111C2D"
+    }
+  },
+  "visualStyles": {
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F4F6FA"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E3E8EF"
+              }
+            },
+            "radius": 8
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "padding": [
+          {
+            "top": 10,
+            "bottom": 10,
+            "left": 12,
+            "right": 12
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#111C2D"
+              }
+            },
+            "fontSize": 12
+          }
+        ]
+      }
+    },
+    "textbox": {
+      "*": {
+        "background": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ]
+      }
+    }
+  }
+}

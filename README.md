@@ -1,6 +1,8 @@
 # Telco Customer Churn Analysis
 
-**Who is leaving, why, and what does it cost?** An end-to-end churn analysis of 7,043 telecom customers using SQL, Python and a simple risk model, ending in concrete retention recommendations.
+**Who is leaving, why, and what does it cost?** An end-to-end churn analysis of 7,043 telecom customers using SQL, Python, a simple risk model and an interactive Power BI dashboard, ending in concrete retention recommendations.
+
+![Power BI executive overview](powerbi/screenshots/01_executive_overview.png)
 
 ![Churn by contract type](outputs/01_churn_by_contract.png)
 
@@ -41,6 +43,26 @@ A telecom company is losing about one in four customers. The retention team has 
 | **SQL** | Loaded the data into SQLite and answered the business questions with `GROUP BY`, `CASE WHEN` bands and conditional aggregation. All queries are in [`sql/churn_queries.sql`](sql/churn_queries.sql). |
 | **Explore** | Charted churn by contract, tenure, payment method, monthly charge and add-on services with Matplotlib. |
 | **Model** | Logistic regression on one-hot encoded features (75/25 stratified split). `TotalCharges` and `MonthlyCharges` were left out because they duplicate tenure and the services, which made the coefficients misleading. Evaluated with ROC-AUC and a cumulative gains curve. |
+| **Dashboard** | Scored every customer with out-of-fold predictions and built a 3-page Power BI report on top (see below). |
+
+## Power BI dashboard
+
+An interactive report for the retention team, saved as a [Power BI Project](https://learn.microsoft.com/power-bi/developer/projects/projects-overview) (`.pbip`), so the data model, DAX and report layout are plain text and can be reviewed in this repo.
+
+| Page | What it answers |
+|---|---|
+| **Executive Overview** | Headline KPIs (churn rate, monthly revenue lost, share of revenue lost) and churn by contract, tenure, payment method and internet service |
+| **Churn Drivers** | Churn with vs without each add-on service, internet service x tech support matrix, and churn by charge band, age and billing type |
+| **Retention Targeting** | Risk tiers from the model, actual churn by risk decile, a gains curve, expected revenue at risk, and a call list of active customers ranked by risk |
+
+**How it's built**
+
+- **Scoring:** [`powerbi/scripts/score_customers.py`](powerbi/scripts/score_customers.py) scores each customer with 5-fold out-of-fold predictions (ROC-AUC 0.843), so no customer is scored by a model that trained on them.
+- **Power Query:** cleans the data (blank `TotalCharges` → 0), builds tenure, charge and risk bands with sort orders, and unpivots the six add-on services into a separate table.
+- **Data model:** `Customers` (one row per customer) → `Add-on Services` (one row per customer per service), plus a dedicated `Churn Measures` table with 19 documented DAX measures in display folders.
+- **DAX highlights:** churn and revenue-lost rates, expected revenue at risk (`SUMX` of charge × churn probability), and a cumulative gains curve measure.
+
+**To open it:** install [Power BI Desktop](https://www.microsoft.com/power-bi/desktop), open `powerbi/TelcoChurn.pbip`, then click **Refresh**. The data loads from this repo on GitHub; choose *Anonymous* if asked for credentials.
 
 ## Charts
 
@@ -58,6 +80,13 @@ telco-customer-churn-analysis/
 ├── notebooks/churn_analysis.ipynb  # full analysis with outputs
 ├── sql/churn_queries.sql           # business questions in SQL (SQLite)
 ├── outputs/                        # charts used in this README
+├── powerbi/
+│   ├── TelcoChurn.pbip             # open this in Power BI Desktop
+│   ├── TelcoChurn.SemanticModel/   # data model, Power Query and DAX (TMDL)
+│   ├── TelcoChurn.Report/          # report pages and theme (PBIR)
+│   ├── data/customers_scored.csv   # customers with model risk scores
+│   ├── scripts/score_customers.py  # produces the scored dataset
+│   └── screenshots/
 └── requirements.txt
 ```
 

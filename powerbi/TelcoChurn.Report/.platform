@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "TelcoChurn"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "2187c56c-f3a2-50be-b951-4f9f92e4ff6c"
+  }
+}
